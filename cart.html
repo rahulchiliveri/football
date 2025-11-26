@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KickOff Jerseys — Cart</title>
+  <style>
+    :root{--brand:#0d47a1;--accent:#ffca28}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#f5f7fb;color:#111}
+    header{position:sticky;top:0;background:#fff;box-shadow:0 4px 18px rgba(10,10,40,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+    .container{max-width:980px;margin:20px auto;padding:0 16px}
+    .item{background:#fff;border-radius:10px;padding:12px;display:flex;gap:12px;align-items:center;box-shadow:0 6px 18px rgba(12,12,30,.06)}
+    .item img{width:120px;height:80px;object-fit:cover;border-radius:8px}
+    .actions button{padding:8px 12px;border-radius:8px;border:none;background:var(--brand);color:#fff;cursor:pointer}
+    .checkout{margin-top:14px;text-align:right}
+    a.btn{background:var(--accent);color:#000;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+  </style>
+</head>
+<body>
+  <header><div class="nav"><div style="font-weight:800;color:var(--brand)">KickOff Jerseys</div><nav><a href="index.html">Home</a> <a href="products.html">Products</a></nav></div></header>
+  <main class="container">
+    <h2>Your cart</h2>
+    <div id="list"></div>
+    <div class="checkout"><a id="toPayment" class="btn" href="payment.html">Proceed to payment</a></div>
+  </main>
+
+  <script>
+    function getCart(){return JSON.parse(localStorage.getItem('kk_cart')||'[]')}
+    function render(){ const list=document.getElementById('list'); const c=getCart(); list.innerHTML=''; if(c.length===0){ list.innerHTML='<div style="padding:18px;background:#fff;border-radius:10px">Your cart is empty — <a href="products.html">shop now</a></div>'; return } let total=0; c.forEach(i=>{ total+=i.price*i.qty; const d=document.createElement('div'); d.className='item'; d.innerHTML=`<img src='https://source.unsplash.com/400x300/?jersey,football,${encodeURIComponent(i.title)}'><div style="flex:1"><div style="font-weight:700">${i.title}</div><div class="muted">₹${i.price} • Qty: ${i.qty}</div></div><div class="actions"><button onclick="dec(${i.id})">-</button><button onclick="inc(${i.id})">+</button><button onclick="remove(${i.id})" style="background:#ff4d4f;margin-left:8px">Remove</button></div>`; list.appendChild(d) });
+    }
+    function save(c){localStorage.setItem('kk_cart',JSON.stringify(c)); render();}
+    function inc(id){ const c=getCart(); const it=c.find(x=>x.id===id); if(it) it.qty++; save(c) }
+    function dec(id){ const c=getCart(); const it=c.find(x=>x.id===id); if(it){ it.qty=Math.max(1,it.qty-1); save(c)} }
+    function remove(id){ let c=getCart(); c=c.filter(x=>x.id!==id); save(c) }
+    render();
+  </script>
+</body>
+</html>
