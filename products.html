@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products</title>
+  <style>
+    :root { --brand:#0d47a1; --accent:#ffca28; --dark:#0a0a0a; }
+    body { font-family:'Poppins', sans-serif; background:#f4f4f4; margin:0; }
+    header { background:var(--dark); color:#fff; padding:20px 0; text-align:center; position:sticky; top:0; }
+    nav a { color:#fff; margin:0 12px; text-decoration:none; }
+
+    .products { display:flex; flex-wrap:wrap; gap:25px; padding:30px; justify-content:center; }
+    .card { width:280px; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:.3s; }
+    .card:hover { transform:translateY(-8px); }
+    .card img { width:100%; border-radius:10px; }
+    .btn { padding:10px 20px; background:var(--accent); border-radius:6px; text-decoration:none; color:#000; font-weight:600; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Our Jerseys</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="cart.html">Cart</a>
+    <a href="payment.html">Payment</a>
+  </nav>
+</header>
+
+<div class="products">
+  <div class="card"><img src="https://source.unsplash.com/600x600/?football,jersey" /><h3>Team A Jersey</h3><p>₹1499</p><a class="btn" href="cart.html">Add to Cart</a></div>
+  <div class="card"><img src="https://source.unsplash.com/600x600/?soccer,kit" /><h3>Team B Jersey</h3><p>₹1599</p><a class="btn" href="cart.html">Add to Cart</a></div>
+  <div class="card"><img src="https://source.unsplash.com/600x600/?football,uniform" /><h3>Team C Jersey</h3><p>₹1799</p><a class="btn" href="cart.html">Add to Cart</a></div>
+  <div class="card"><img src="https://source.unsplash.com/600x600/?jersey,football" /><h3>Team D Jersey</h3><p>₹1899</p><a class="btn" href="cart.html">Add to Cart</a></div>
+</div>
+</body>
+</html>
