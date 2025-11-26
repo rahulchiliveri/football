@@ -1,38 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Products</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KickOff Jerseys — Products</title>
   <style>
-    :root { --brand:#0d47a1; --accent:#ffca28; --dark:#0a0a0a; }
-    body { font-family:'Poppins', sans-serif; background:#f4f4f4; margin:0; }
-    header { background:var(--dark); color:#fff; padding:20px 0; text-align:center; position:sticky; top:0; }
-    nav a { color:#fff; margin:0 12px; text-decoration:none; }
+    :root{--brand:#0d47a1;--accent:#ffca28;--bg:#f5f7fb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:#111}
+    header{position:sticky;top:0;background:#fff;z-index:50;box-shadow:0 4px 18px rgba(10,10,40,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+    .search{max-width:520px;width:60%}
+    .search input{width:100%;padding:10px;border-radius:10px;border:1px solid #ddd}
 
-    .products { display:flex; flex-wrap:wrap; gap:25px; padding:30px; justify-content:center; }
-    .card { width:280px; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:.3s; }
-    .card:hover { transform:translateY(-8px); }
-    .card img { width:100%; border-radius:10px; }
-    .btn { padding:10px 20px; background:var(--accent); border-radius:6px; text-decoration:none; color:#000; font-weight:600; }
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;padding:18px}
+    .prod{background:#fff;padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(12,12,30,.06);transition:transform .18s}
+    .prod:hover{transform:translateY(-8px)}
+    .prod img{width:100%;height:200px;object-fit:cover;border-radius:8px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    .add{background:var(--brand);color:#fff}
+
+    /* cart drawer button */
+    .cart-btn{position:fixed;right:18px;bottom:18px;background:var(--accent);padding:12px 14px;border-radius:999px;box-shadow:0 10px 30px rgba(13,71,161,.12);cursor:pointer;font-weight:800}
+
+    @media(max-width:720px){.search{width:100%}}
   </style>
 </head>
 <body>
-<header>
-  <h1>Our Jerseys</h1>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="products.html">Products</a>
-    <a href="cart.html">Cart</a>
-    <a href="payment.html">Payment</a>
-  </nav>
-</header>
+  <header class="nav">
+    <div class="logo" style="font-weight:800;color:var(--brand)">KickOff Jerseys</div>
+    <div class="search"><input id="search" placeholder="Search team, player or kit..." oninput="liveSearch()" /></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="#" onclick="toggleDrawer(event)">Cart</a>
+    </nav>
+  </header>
 
-<div class="products">
-  <div class="card"><img src="https://source.unsplash.com/600x600/?football,jersey" /><h3>Team A Jersey</h3><p>₹1499</p><a class="btn" href="cart.html">Add to Cart</a></div>
-  <div class="card"><img src="https://source.unsplash.com/600x600/?soccer,kit" /><h3>Team B Jersey</h3><p>₹1599</p><a class="btn" href="cart.html">Add to Cart</a></div>
-  <div class="card"><img src="https://source.unsplash.com/600x600/?football,uniform" /><h3>Team C Jersey</h3><p>₹1799</p><a class="btn" href="cart.html">Add to Cart</a></div>
-  <div class="card"><img src="https://source.unsplash.com/600x600/?jersey,football" /><h3>Team D Jersey</h3><p>₹1899</p><a class="btn" href="cart.html">Add to Cart</a></div>
-</div>
+  <main>
+    <section style="padding:14px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <button onclick="filterBy('all')" class="btn">All</button>
+      <button onclick="filterBy('home')" class="btn">Home</button>
+      <button onclick="filterBy('away')" class="btn">Away</button>
+      <button onclick="filterBy('retro')" class="btn">Retro</button>
+      <select id="teamFilter" onchange="filterTeam(this.value)">
+        <option value="all">All teams</option>
+        <option value="barca">FC Barcelona</option>
+        <option value="madrid">Real Madrid</option>
+        <option value="city">Man City</option>
+      </select>
+    </section>
+
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <!-- cart drawer -->
+  <div id="drawer" style="position:fixed;right:-420px;top:0;width:380px;height:100%;background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.12);transition:right .28s;padding:18px;overflow:auto;z-index:999">
+    <h3>Your Cart</h3>
+    <div id="cartItems"></div>
+    <div style="margin-top:12px"><strong>Total: </strong><span id="total">₹0</span></div>
+    <div style="margin-top:12px"><a href="payment.html" class="btn add" style="text-decoration:none">Proceed to payment</a></div>
+  </div>
+
+  <button class="cart-btn" onclick="toggleDrawer()">🛒</button>
+
+  <script>
+    // product data
+    const products=[
+      {id:1,title:'FC Barcelona Home 25',tag:'home',team:'barca',price:4999,img:'https://source.unsplash.com/800x600/?barcelona,jersey'},
+      {id:2,title:'Real Madrid Away 25',tag:'away',team:'madrid',price:4799,img:'https://source.unsplash.com/800x600/?realmadrid,jersey'},
+      {id:3,title:'City Retro 90s',tag:'retro',team:'city',price:3499,img:'https://source.unsplash.com/800x600/?mancity,jersey'},
+      {id:4,title:'Classic Stripes',tag:'home',team:'generic',price:2999,img:'https://source.unsplash.com/800x600/?football,retro'}
+    ];
+
+    const grid=document.getElementById('grid');
+    function render(list=products){ grid.innerHTML=''; list.forEach(p=>{ const d=document.createElement('div'); d.className='prod'; d.innerHTML=`<img src='${p.img}' alt='${p.title}'><h4 style='margin:10px 0 6px'>${p.title}</h4><div style='font-weight:700'>₹${p.price}</div><div style='margin-top:10px'><button class='btn add' onclick='addToCart(${p.id})'>Add to cart</button></div>`; grid.appendChild(d); }) }
+    render();
+
+    // live search & filters
+    function liveSearch(){ const q=document.getElementById('search').value.toLowerCase(); const filtered=products.filter(p=>p.title.toLowerCase().includes(q) || p.team.includes(q)); render(filtered); }
+    function filterBy(t){ render(t==='all'?products:products.filter(p=>p.tag===t)) }
+    function filterTeam(t){ render(t==='all'?products:products.filter(p=>p.team===t)) }
+
+    // cart logic
+    function getCart(){return JSON.parse(localStorage.getItem('kk_cart')||'[]')}
+    function saveCart(c){localStorage.setItem('kk_cart',JSON.stringify(c)); updateCartUI()}
+    function addToCart(id){ const p=products.find(x=>x.id===id); if(!p) return; const c=getCart(); const ex=c.find(i=>i.id===id); if(ex) ex.qty++; else c.push({id:p.id,title:p.title,price:p.price,qty:1}); saveCart(c); alert('Added to cart') }
+    function updateCartUI(){ const c=getCart(); const el=document.getElementById('cartItems'); el.innerHTML=''; let total=0; c.forEach(i=>{ total+=i.price*i.qty; const row=document.createElement('div'); row.style.marginBottom='10px'; row.innerHTML=`<div style="font-weight:700">${i.title}</div><div>Qty: ${i.qty} • ₹${i.price*i.qty} <button onclick='remove(${i.id})' style='margin-left:8px'>Remove</button></div>`; el.appendChild(row) }); document.getElementById('total').textContent='₹'+total }
+    function remove(id){ let c=getCart(); c=c.filter(i=>i.id!==id); saveCart(c) }
+
+    // drawer toggle
+    function toggleDrawer(){ const d=document.getElementById('drawer'); d.style.right= d.style.right==='0px'?'':'0px'; if(d.style.right==='0px') updateCartUI(); }
+
+    // initialize counts
+    updateCartUI();
+
+    // smooth page transitions (simple fade)
+    document.addEventListener('click', e=>{ const a=e.target.closest('a'); if(a && a.href && a.getAttribute('target')!=="_blank" && a.getAttribute('href') && !a.getAttribute('href').startsWith('#')){ e.preventDefault(); document.body.style.opacity=0; setTimeout(()=> location.href=a.getAttribute('href'),220) }});
+  </script>
 </body>
 </html>
