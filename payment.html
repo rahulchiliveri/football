@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KickOff Jerseys — Payment</title>
+  <style>
+    :root{--brand:#0d47a1;--accent:#ffca28}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#f4f6f9;color:#111}
+    .wrap{max-width:520px;margin:28px auto;padding:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(12,12,30,.06)}
+    input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #ddd}
+    button{width:100%;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:8px;font-weight:700}
+    .note{color:#666;font-size:14px;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>Payment</h2>
+      <div id="summary">Calculating total...</div>
+      <form id="payform">
+        <input id="name" placeholder="Cardholder name" required>
+        <input id="card" placeholder="Card number (16 digits)" maxlength="16" required>
+        <input id="exp" placeholder="MM/YY" maxlength="5" required>
+        <input id="cvv" placeholder="CVV" maxlength="3" required>
+        <button type="submit">Pay securely</button>
+      </form>
+      <div class="note">Demo payment — no real money will be charged.</div>
+    </div>
+  </div>
+
+  <script>
+    function getCart(){return JSON.parse(localStorage.getItem('kk_cart')||'[]')}
+    function compute(){ const c=getCart(); return c.reduce((s,i)=>s+i.price*i.qty,0) }
+    document.getElementById('summary').textContent='Total: ₹'+compute();
+
+    document.getElementById('payform').addEventListener('submit', async function(e){ e.preventDefault(); const name=document.getElementById('name').value.trim(); const card=document.getElementById('card').value.trim(); const exp=document.getElementById('exp').value.trim(); const cvv=document.getElementById('cvv').value.trim(); if(!name||card.length<12||cvv.length<3){ alert('Please fill valid details'); return }
+      // mock API call
+      try{ const res=await fetch('https://jsonplaceholder.typicode.com/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:compute(),name})}); const data=await res.json(); localStorage.removeItem('kk_cart'); alert('Payment successful — Ref:'+data.id); window.location='index.html'; }catch(err){ alert('Payment failed (demo)') }
+    })
+  </script>
+</body>
+</html>
